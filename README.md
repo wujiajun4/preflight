@@ -16,6 +16,12 @@
   <img src="https://img.shields.io/badge/lang-EN%20%7C%20%E4%B8%AD%E6%96%87-brightgreen" />
 </p>
 
+<p align="center">
+  <code>npx skills add wujiajun4/preflight -g</code>
+</p>
+
+---
+
 ---
 
 > **Every embarrassing "YOUR_USERNAME in the README" bug report is preventable in 3 seconds.** Preflight runs six automated checks before you push. Ship clean. Every time.
