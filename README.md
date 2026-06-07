@@ -1,15 +1,15 @@
-<p align="center">
+<div align="center">
   <img src="assets/icon.svg" width="80" alt="Preflight" />
-</p>
+</div>
 
-<h1 align="center">✈️ Preflight</h1>
-
-<p align="center">
-  <strong>Don't ship half-baked. One command, six checks, pass-or-fail table.<br/>别把半成品推上线。一条命令，六项检查，通过/失败一目了然。</strong>
-</p>
+<h1 align="center">✈️ Preflight v2.0</h1>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.0.0-blue" />
+  <strong>Don't ship half-baked. Don't ship invisible.<br/>别把半成品推上线。别让好产品没人发现。</strong>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/version-2.0.0-blue" />
   <img src="https://img.shields.io/badge/platform-Claude%20Code%20%7C%20Agent%20Skills%20%7C%2067%2B-purple" />
   <img src="https://img.shields.io/badge/license-MIT-green" />
   <img src="https://img.shields.io/badge/skills.sh-available-orange" />
@@ -22,202 +22,136 @@
 
 ---
 
----
-
-> **Every embarrassing "YOUR_USERNAME in the README" bug report is preventable in 3 seconds.** Preflight runs six automated checks before you push. Ship clean. Every time.
+> **v2.0 ships with distribution checks.** v1 caught content bugs (placeholders, missing LICENSE). But 4 shipped products got zero discovery — because nobody checked GitHub topics, skills.sh visibility, or install command presence. v2 closes the gap.
 >
-> **每个尴尬的"README 里写着 YOUR_USERNAME"的 bug 报告，3 秒就能避免。** Preflight 在你 push 前跑六项自动检查。每次发布都干干净净。
+> **v2.0 新增分发检查。** v1 只检查内容质量。但今天发布的 4 个产品零发现——因为没人检查 GitHub topics、skills.sh 可见度、安装命令出现次数。v2 补上这个盲区。
 
 ---
 
 ## 痛点 / The Problem
 
-你写了 3 小时代码。功能跑通了。`git push`。五分钟后：
+### v1 查不出的问题
 
-- 有人开 Issue："你的 README 还写着 `YOUR_USERNAME`"
-- 又一个 Issue："有 LICENSE 文件吗？我能用这个吗？"
-- 第三个："这个 `ctx_fetch_and_index` 工具我机器上不存在"
+你 `git push` 了。READMe 完美。LICENSE 齐全。然后——零⭐。
 
-**每一个都是 3 秒内能避免的。** 你只是没检查。
+不是质量不行，是**没人找得到你**：
 
-没有现有工具解决这个问题。CI/CD 管线检查你的代码——不检查 README。Linter 检查你的语法——不检查文件结构。安全扫描器检查你的依赖——不检查你是否忘了写 `.gitignore`。
+| 症状 | 根因 | preflight v1 查了没 |
+|------|------|------|
+| GitHub 搜索找不到 | repo topics 为空 | ❌ 没查 |
+| skills.sh 没收录 | 没加 `skill` topic | ❌ 没查 |
+| 用户不知道怎么装 | 安装命令只在 README 里出现 1 次 | ❌ 没查 |
 
----
-
-You've been coding for 3 hours. The feature works. You `git push`. Five minutes later:
-
-- Someone opens an issue: "Your README still says `YOUR_USERNAME`"
-- Another issue: "Where's the LICENSE file? Can I even use this?"
-- A third: "This `ctx_fetch_and_index` tool doesn't exist on my machine"
-
-**Every one of these is preventable in 3 seconds.** You just didn't check.
-
-No existing tool solves this. CI/CD checks your code — not your README. Linters check your syntax — not your file structure. Security scanners check your dependencies — not whether you forgot a `.gitignore`.
-
----
-
-## 解决方案 / The Solution
-
-`/preflight` 扫描你的项目，在 push 前跑六项自动检查：
-
-```
-/preflight
-```
-
-### Demo
-
-```
-## Preflight Report — tool-eval
-
-| # | 检查项 Check  | 结果 Result | 详情 Detail                          |
-|---|--------------|-----------|-------------------------------------|
-| 1 | 占位符 Placeholders | ✅ PASS   | 无 YOUR_USERNAME/TODO/FIXME        |
-| 2 | LICENSE      | ❌ FAIL   | LICENSE 文件缺失                   |
-| 3 | 私有工具 Private tools | ❌ FAIL   | ctx_fetch_and_index in SKILL.md:37 |
-| 4 | .gitignore   | ✅ PASS   | 存在，覆盖 .DS_Store               |
-| 5 | 双语 Bilingual | ⚠️ WARN   | 纯英文 README                      |
-| 6 | 文件结构 File structure | ✅ PASS  | 全部必需文件齐备                    |
-
-**结论 Verdict: 3/6 通过，2 失败，1 警告。修复 #2 和 #3 后再发布。**
-```
-
-三种结果 / Three outcomes:
-
-| 全部 ✅ / All ✅ | 有 ❌ / Has ❌ | 仅 ⚠️ |
-|----------------|-------------|-------|
-| 发布！/ Ship it | 修复再推 / Fix first | 注明后发布 / Push with caveat |
-
----
-
-## 六项检查 / The Six Checks
-
-| # | 检查 Check | 怎么查 Command | 为什么重要 Why |
-|---|-----------|---------------|---------------|
-| 1 | **占位符 Placeholders** | `grep -rn 'YOUR_USERNAME\|TODO\|FIXME' .` | 公开代码里的占位符 = 尴尬 |
-| 2 | **LICENSE** | `ls LICENSE` | 声明 MIT 却不给文件 = 法律上模糊 |
-| 3 | **私有工具 Private tools** | `grep -rn 'ctx_fetch\|ghost_os' .` | 这些只在你的机器上能跑 |
-| 4 | **`.gitignore`** | `ls .gitignore` | `.DS_Store`、`*.log` 泄露到仓库里 |
-| 5 | **双语 Bilingual** | 词数分析 / Word-count | 纯英文丢一半受众；纯中文丢另一半 |
-| 6 | **文件结构 Structure** | 检查 README + SKILL + LICENSE + .gitignore | 完整的包才叫发布 |
-
----
-
-## 功能 / Features
-
-| 功能 Feature | 做什么 What it does |
-|-------------|-------------------|
-| 🔍 **六项检查 / Six checks** | 占位符、LICENSE、私有工具、.gitignore、双语、文件结构 |
-| 📊 **成绩单 / Report card** | 通过/失败表格，3 秒读懂 |
-| 🔧 **`--fix` 模式** | 自动生成 LICENSE、创建 .gitignore、替换 YOUR_USERNAME |
-| 🧪 **`--strict` 严格模式** | 加 4 项检查：死链、行尾空格、图片路径、CHANGELOG |
-| 🌐 **双语 / Bilingual** | 中英文报告 |
-| 🪶 **零依赖 / Zero deps** | 纯 Bash + grep + ls。无需安装、无运行时开销。 |
-
----
-
-## 原理 / How It Works
-
-```
-/preflight
-    │
-    ▼
-第一步：检测 / Detect ───── 这是 Skill？npm 包？Rust crate？适配检查规则。
-    │
-    ▼
-第二步：扫描 / Scan ────── 一个 Bash 调用跑完 6 项检查
-    │
-    ▼
-第三步：报告 / Report ──── 通过/失败表格 + 结论行
-    │
-    ▼
-第四步（可选）：修复 / Fix ─── 如果传了 --fix，自动修补常见问题
-```
-
----
-
-## 技术栈 / Tech Stack
-
-| 类别 Category | 技术 Technology |
-|--------------|----------------|
-| 平台 / Platform | Claude Code、OpenClaw、Agent Skills（67+ 平台） |
-| 语言 / Language | Bash + Markdown (SKILL.md) |
-| 工具 / Tools | grep、ls、wc、find —— 标准 Unix，无花哨 |
-| 依赖 / Dependencies | 零 —— 纯 Skill，任何 macOS/Linux 即跑 |
-
----
-
-## 项目结构 / Project Structure
-
-```
-preflight/
-├── assets/
-│   └── icon.svg          # 剪贴板 + 打勾 + 起飞箭头
-├── .gitignore
-├── LICENSE               # MIT
-├── README.md             # ← 你在这里
-└── SKILL.md              # 运行时规范：4 步流水线 + 6 项检查 + 输出模板
-```
+**质量好 ≠ 被发现。** v2 把分发也变成自动化检查。
 
 ---
 
 ## 模式 / Modes
 
-| 命令 Command | 做什么 What |
-|-------------|------------|
-| `/preflight` | 跑全部 6 项检查，显示成绩单 |
-| `/preflight --strict` | 加 4 项额外检查（死链、行尾空格、图片路径、CHANGELOG） |
-| `/preflight --fix` | 自动修复常见问题（生成 LICENSE、创建 .gitignore、替换 YOUR_USERNAME） |
+| 命令 | 检查项 | 什么时候用 |
+|------|--------|------|
+| `/preflight` | 1–6 内容质量 | 每次发布 |
+| `/preflight --distribute` | 1–9 内容+分发 | 发布 Skill/公开产品 |
+| `/preflight --strict` | 1–13 全部 | 最终打磨 |
+| `/preflight --fix` | 1–6 + 自动修复 | 快速清理 |
+
+---
+
+## 内容检查 / Content Checks (#1–6)
+
+| # | 检查 | 抓什么 |
+|---|------|--------|
+| 1 | **占位符** | `YOUR_USERNAME`, `TODO`, `FIXME` |
+| 2 | **LICENSE** | 声明了 MIT 但没文件 = 法律模糊 |
+| 3 | **私有工具** | `ctx_fetch_and_index` 只在你机器上能用 |
+| 4 | **.gitignore** | `.DS_Store`, `*.log` 泄露到仓库 |
+| 5 | **双语** | 纯英文丢一半受众，纯中文丢另一半 |
+| 6 | **文件结构** | README + SKILL + LICENSE + .gitignore 齐全 |
+
+## 分发检查 / Distribution Checks (#7–9) 🆕
+
+| # | 检查 | 抓什么 | 怎么查 |
+|---|------|--------|--------|
+| 7 | **GitHub Topics** | 0 topics = GitHub 搜索找不到你 | GitHub API → 必须 ≥5 个 |
+| 8 | **skills.sh 可见度** | 67 平台生态找不到你的 skill | 检查 `skill` topic + `user-invocable: true` |
+| 9 | **安装命令曝光** | 用户看到 1 次不会行动 | 读 README → `npx skills add` 需要 ≥3 次 |
+
+---
+
+## 案例 / Case Study
+
+**2026-06-06: 发布 4 个产品后零发现。** preflight v1 检查全部通过。但：
+
+```
+Check #7: GitHub Topics → 0/4 repos had topics → invisible to search
+Check #8: skills.sh → no `skill` topic → not auto-indexed
+Check #9: Install command → 1-2 occurrences → users didn't know how to install
+```
+
+v2 的 `--distribute` 模式就是为这个教训而生的。
+
+---
+
+## 输出 / Output
+
+```
+## Preflight Report — tool-eval
+
+### Content (#1–6)
+| # | Check | Result | Detail |
+|---|-------|--------|--------|
+| 1 | Placeholders | ✅ PASS | Clean |
+| 2 | LICENSE | ✅ PASS | MIT |
+| 3 | Private tools | ✅ PASS | Clean |
+| 4 | .gitignore | ✅ PASS | Exists |
+| 5 | Bilingual | ✅ PASS | 272 lines, EN+CN |
+| 6 | File structure | ✅ PASS | Complete |
+
+### Distribution (#7–9) [--distribute]
+| # | Check | Result | Detail |
+|---|-------|--------|--------|
+| 7 | GitHub Topics | ✅ PASS | 9 topics: claude-code, skill, agent-skills, ... |
+| 8 | skills.sh | ✅ PASS | Auto-indexed |
+| 9 | Install visibility | ✅ PASS | npx skills add appears 4 times |
+
+**Verdict: 9/9 PASS. Ship it.**
+```
 
 ---
 
 ## 安装 / Install
 
 ```bash
-# Claude Code（一行命令 / one command）
-mkdir -p ~/.claude/skills && git clone https://github.com/wujiajun4/preflight.git ~/.claude/skills/preflight
-
-# Agent Skills（全平台通用 / any platform）
 npx skills add wujiajun4/preflight -g
 ```
 
----
-
-## 跟 Tool Eval 配对 / Pair with Tool Eval
-
-```
-/preflight          ← 发布前检查自己的项目
-/tool-eval <url>    ← 安装前评估别人的工具
-```
-
-一个管自己的质量。一个管别人的选择。合在一起，你永远不会发布翻车或安装翻车。
-
-One checks your work. One checks theirs. Together, you never ship broken or install wrong.
+| 你说 | 发生什么 |
+|------|------|
+| `/preflight` | 6 项内容检查 |
+| `/preflight --distribute` | 9 项全查 |
+| `/preflight --strict` | 13 项严格模式 |
+| `/preflight --fix` | 自动修复占位符/LICENSE/.gitignore |
 
 ---
 
-## FAQ
+## 与你其他 Skill 的关系
 
-**Q: 这替代 CI/CD 吗？ / Does this replace CI/CD?**
-不。CI/CD 检查代码。Preflight 检查内容。它们是互补层。
-
-**Q: 能加自定义检查吗？ / Can I add custom checks?**
-能。编辑 SKILL.md，在 Step 2 的 Bash 块里加检查即可。所有标准 Unix 命令都行。
-
-**Q: 我的项目不需要 LICENSE 怎么办？ / What if my project doesn't need a LICENSE?**
-Preflight 会自适应。私有仓库跳过 LICENSE 检查。没有 SKILL.md 的项目跳过文件结构检查。第一步的检测决定哪些规则适用。
-
-**Q: 跟 tool-eval 有什么区别？ / How is this different from tool-eval?**
-Tool Eval 评估**别人的**工具。Preflight 检查**自己的**项目。兄弟技能，互补关系。
+```
+preflight     → 检查自己的项目（质量+分发）
+tool-eval     → 评估别人的工具（该不该装）
+brain-sync    → 同步大小脑（数据一致）
+skill-lens    → 检测盲区（执行覆盖）
+```
 
 ---
 
-## 贡献 / Contributing
+## v2.0 更新日志
 
-提 Issue 和 PR 都欢迎。提交前——吃自己的狗粮：
-
-```bash
-/preflight --strict
-```
+| 变更 | 原因 |
+|------|------|
+| `--distribute` 模式 + 3 项分发检查 | 4 产品零发现 → 分发也需要自动化 |
+| 渐进式披露 | 减少无关时的上下文占用 |
+| 标准化触发词 | keywords + events 更精准匹配 |
 
 ---
 
