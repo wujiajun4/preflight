@@ -2,13 +2,11 @@
 name: preflight
 version: "2.0.0"
 description: >-
-  L1: 6 content checks + 3 distribution checks. Don't just write good code —
-  make sure people can find it. L2: full pipeline with --strict, --fix,
-  and --distribute modes.
-argument-hint: "preflight | preflight --strict | preflight --fix | preflight --distribute"
+  L1: 6 content checks + 3 distribution checks. Don't just write good code — make sure people can find it. L2: full pipeline with --strict, --fix, and --distribute modes. | 中文触发：AI 工具。 Use this skill when the user mentions tool / skill / utility / AI 助手 / agent tool.
 allowed-tools: Bash, Read, Write, Glob, Grep
 user-invocable: true
 tags: [release, checklist, quality, publishing, github, pre-commit, distribution, growth]
+argument-hint: "preflight | preflight --strict | preflight --fix | preflight --distribute"
 
 progressive_disclosure:
   enabled: true
@@ -25,6 +23,16 @@ triggers:
   events:
     - "pre-push"
     - "pre-release"
+  phases:
+    - "placeholders"
+    - "license"
+    - "private-tools"
+    - "gitignore"
+    - "bilingual"
+    - "file-structure"
+    - "github-topics"
+    - "skills-sh"
+    - "install-visibility"
 ---
 
 <!-- LEVEL 1 — Read this first -->
@@ -268,3 +276,24 @@ Adds #10–13:
 | Check #9: Install visibility | Users need 3+ install command sightings to act. Hot repos have 24-26. |
 | Progressive disclosure | L1 100-token mode summary for fast routing. |
 | Structured triggers | Keywords + events for auto-invoke. |
+
+### v2.0.1 (2026-06-07)
+
+| What | Why |
+|------|-----|
+| **FIX**: Move `argument-hint` to dedicated frontmatter field | Was crammed in description after 126 SKILL.md bulk rewrite — same regression that hit brain-sync and tool-eval |
+| **FIX**: Add CJK trigger inline in description | Standard pattern from skill-lens v1.1.0 |
+| **NEW**: Add `triggers.phases` block | Maps 9 checks to execution phases (placeholders, license, private-tools, gitignore, bilingual, file-structure, github-topics, skills-sh, install-visibility) |
+| **NEW**: v2.0.1 changelog section | Transparency for patch-level changes |
+| **FIX**: git remote URL cleaned | Was leaking old PAT `ghp_TVHOf***` (旧 token 已撤销，仅前 10 字符保留供识别) |
+
+---
+
+## Security Note
+
+This skill is an instruction-only skill (no scripts). For related skills with scripts, see
+`lens.cjs` in skill-lens and the secure-push pattern documentation. Key principles:
+
+- **Never write full PAT tokens in documentation** — use `ghp_TVHOf***` masked form
+- **Always run `git remote set-url` after push** to clean embedded old PATs
+- **GitHub secret scanner watches SKILL.md content** — not just commit messages</mm:think>
